@@ -1,0 +1,38 @@
+body {
+  align-items: center;
+  background-color: #253d51;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+}
+
+.image-wrapper {
+  background-color: lighten(#253d51, 5%);
+  width: 45vw;
+}
+
+.btn {
+  margin-top: 40px;
+}
+
+[data-webgl-image] {
+  height: 0;
+  padding-bottom: var(--padding-bottom);
+  position: relative;
+  transition: 0.5s opacity;
+
+  &:not(.is-visible) {
+    opacity: 0;
+  }
+
+  canvas {
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+}
