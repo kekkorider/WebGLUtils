@@ -26,7 +26,11 @@ class WebGLImage {
   render() {
     this.count++
     this.uniforms.u_time.value = this.count
+
     this.gl.uniform1f(this.uniforms.u_time.location, this.uniforms.u_time.value)
+
+    this.gl.uniform2f(this.uniforms.u_resolution.location, this.gl.drawingBufferWidth, this.gl.drawingBufferHeight)
+
     WebGLUtils.render(this.gl)
   }
 
@@ -64,9 +68,18 @@ class WebGLImage {
   }
 
   _createUniforms() {
-    this.uniforms.u_time = {
-      location: this.gl.getUniformLocation(this.program, 'u_time'),
-      value: 0
+    this.uniforms = {
+      u_time: {
+        location: this.gl.getUniformLocation(this.program, 'u_time'),
+        value: 0
+      },
+      u_resolution: {
+        location: this.gl.getUniformLocation(this.program, 'u_resolution'),
+        value: [
+          this.gl.drawingBufferWidth,
+          this.gl.drawingBufferHeight
+        ]
+      }
     }
   }
 }
