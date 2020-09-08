@@ -42,8 +42,8 @@ class WebGLImage {
         .then(image => {
           this.gl = WebGLUtils.createContext(this.canvas)
           this._createProgram()
-          WebGLUtils.createBigTriangleAttribs(this.gl, this.program)
-          WebGLUtils.createBigTriangleTexture(this.gl, this.program, image)
+          WebGLUtils.createFullsizeAttribs(this.gl, this.program)
+          WebGLUtils.createFullsizeTexture(this.gl, this.program, image)
           this._createUniforms()
 
           window.WEBGL_IMAGES.push(this)
@@ -53,7 +53,7 @@ class WebGLImage {
   }
 
   _createProgram() {
-    const vsSource = WebGLUtils.getBigTriangleVertexShaderSource()
+    const vsSource = WebGLUtils.getFullsizeVertexShaderSource()
     const fsSource = this._getFragmentShader()
 
     const vs = WebGLUtils.createShader(this.gl, 'vertex', vsSource)

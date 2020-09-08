@@ -72,7 +72,7 @@ export default class WebGLUtils {
    * @param {WebGLRenderingContext} gl - The WebGLContext
    * @param {WebGLProgram} program - The WebGL program
    */
-  static createBigTriangleAttribs(gl, program) {
+  static createFullsizeAttribs(gl, program) {
     // a_position
     const positionBuffer = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
@@ -122,7 +122,7 @@ export default class WebGLUtils {
    * @param {WebGLProgram} program - The WebGL program
    * @param {HTMLImageElement|HTMLCanvasElement} image - The image to pass as a texture
    */
-  static createBigTriangleTexture(gl, program, image) {
+  static createFullsizeTexture(gl, program, image) {
     const textureCoordLocation = gl.getAttribLocation(program, 'a_texture_coord')
     gl.enableVertexAttribArray(textureCoordLocation)
 
@@ -156,7 +156,7 @@ export default class WebGLUtils {
    *
    * @return {string} A string containiing the shader code
    */
-  static getBigTriangleVertexShaderSource() {
+  static getFullsizeVertexShaderSource() {
     return `
       attribute vec2 a_position;
       attribute vec2 a_uv;
@@ -179,7 +179,7 @@ export default class WebGLUtils {
    *
    * @return {string} A string containiing the shader code
    */
-  static getBigTriangleFragmentShaderSource() {
+  static getFullsizeFragmentShaderSource() {
     return `
       precision mediump float;
 
