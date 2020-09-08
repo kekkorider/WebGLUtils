@@ -1,5 +1,8 @@
 import WebGLUtils from './WebGLUtils'
 
+const fragmentShader = require('./shaders/image.frag')
+const vertexShader = require('./shaders/fullsize.vert')
+
 class WebGLImage {
   constructor(container) {
     this.container = container
@@ -53,35 +56,11 @@ class WebGLImage {
   }
 
   _createProgram() {
-    const vsSource = WebGLUtils.getFullsizeVertexShaderSource()
-    const fsSource = this._getFragmentShader()
-
-    const vs = WebGLUtils.createShader(this.gl, 'vertex', vsSource)
-    const fs = WebGLUtils.createShader(this.gl, 'fragment', fsSource)
+    const vs = WebGLUtils.createShader(this.gl, 'vertex', vertexShader)
+    const fs = WebGLUtils.createShader(this.gl, 'fragment', fragmentShader)
 
     this.program = WebGLUtils.createProgram(this.gl, vs, fs)
     this.gl.useProgram(this.program)
-  }
-
-  _getFragmentShader() {
-    return `
-      precision mediump float;
-
-      uniform sampler2D u_image;
-
-      uniform float u_time;
-
-      varying vec2 v_uv;
-      varying vec2 v_texture_coord;
-
-      void main() {
-        vec4 color = texture2D(u_image, v_texture_coord);
-        color.r = abs(sin(u_time * 0.0085));
-        color.b = abs(sin(u_time * 0.0055));
-
-        gl_FragColor = color;
-      }
-    `
   }
 
   _createUniforms() {

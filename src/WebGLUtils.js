@@ -152,50 +152,6 @@ export default class WebGLUtils {
   }
 
   /**
-   * Get the minimal vertex shader needed for the big triangle technique.
-   *
-   * @return {string} A string containiing the shader code
-   */
-  static getFullsizeVertexShaderSource() {
-    return `
-      attribute vec2 a_position;
-      attribute vec2 a_uv;
-      attribute vec2 a_texture_coord;
-
-      varying vec2 v_uv;
-      varying vec2 v_texture_coord;
-
-      void main() {
-        gl_Position = vec4(a_position, 0.0, 1.0);
-
-        v_uv = a_uv;
-        v_texture_coord = a_texture_coord;
-      }
-    `
-  }
-
-  /**
-   * Get the minimal fragment shader needed for the big triangle technique.
-   *
-   * @return {string} A string containiing the shader code
-   */
-  static getFullsizeFragmentShaderSource() {
-    return `
-      precision mediump float;
-
-      uniform sampler2D u_image;
-
-      varying vec2 v_uv;
-      varying vec2 v_texture_coord;
-
-      void main() {
-        vec4 color = texture2D(u_image, v_texture_coord);
-        gl_FragColor = color;
-      }
-    `
-  }
-
-  /**
    * Render to the canvas.
    *
    * @param {WebGLRenderingContext} gl - The WebGLContext
