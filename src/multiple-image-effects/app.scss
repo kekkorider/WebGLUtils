@@ -1,0 +1,16 @@
+body {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: center;
+  margin: 0;
+  overflow: hidden;
+}
+
+#app {
+  background-color: #f1f2f3;
+  width: 70vw;
+  height: calc(70vw * 0.5625);
+  margin-bottom: 40px;
+}

@@ -121,6 +121,8 @@ export default class WebGLUtils {
    * @param {WebGLRenderingContext} gl - The WebGL context
    * @param {WebGLProgram} program - The WebGL program
    * @param {HTMLImageElement|HTMLCanvasElement} image - The image to pass as a texture
+   *
+   * @returns {WebGLTexture} texture - The texture
    */
   static createFullsizeTexture(gl, program, image) {
     const textureCoordLocation = gl.getAttribLocation(program, 'a_texture_coord')
@@ -149,6 +151,8 @@ export default class WebGLUtils {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
 
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image)
+
+    return texture
   }
 
   /**

@@ -1,7 +1,7 @@
-import WebGLUtils from './WebGLUtils'
+import WebGLUtils from '../WebGLUtils'
 
-const fragmentShader = require('./shaders/image.frag')
-const vertexShader = require('./shaders/fullsize.vert')
+const fragmentShader = require('../shaders/image.frag')
+const vertexShader = require('../shaders/fullsize.vert')
 
 class WebGLImage {
   constructor(container) {
