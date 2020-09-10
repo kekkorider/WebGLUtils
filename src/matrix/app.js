@@ -23,7 +23,7 @@ class Matrices {
   #render(gl) {
     this.#updateUniforms()
 
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+    gl.clear(gl.COLOR_BUFFER_BIT)
     gl.drawArrays(gl.TRIANGLES, 0, 18)
 
     requestAnimationFrame(() => this.#render(gl))
@@ -63,6 +63,10 @@ class Matrices {
       u_translation: {
         location: gl.getUniformLocation(this.program, 'u_translation'),
         value: [0, 0]
+      },
+      u_rotation: {
+        location: gl.getUniformLocation(this.program, 'u_rotation'),
+        value: [0, 1]
       }
     }
   }
@@ -97,6 +101,13 @@ class Matrices {
       this.canvas.width / 2 + Math.cos(Date.now() * 0.004) * 100 - 50,
       this.canvas.height / 2 + Math.sin(Date.now() * 0.0025) * 100 - 75
     )
+
+    // u_rotation
+    const rotation = [
+      Math.sin(Date.now() * 0.002),
+      Math.cos(Date.now() * 0.002)
+    ]
+    gl.uniform2fv(this.uniforms.u_rotation.location, rotation)
 
     // u_color
     gl.uniform4fv(this.uniforms.u_color.location, this.uniforms.u_color.value)
