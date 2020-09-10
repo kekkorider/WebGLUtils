@@ -1,5 +1,7 @@
 import WebGLUtils from '../WebGLUtils'
 
+const glMatrix = require('gl-matrix')
+
 const vertexShader = require('../shaders/rectangle.vert')
 const fragmentShader = require('../shaders/rectangle.frag')
 
@@ -21,9 +23,10 @@ class Matrices {
   }
 
   #render(gl) {
+    gl.clear(gl.COLOR_BUFFER_BIT)
+
     this.#updateUniforms()
 
-    gl.clear(gl.COLOR_BUFFER_BIT)
     gl.drawArrays(gl.TRIANGLES, 0, 18)
 
     requestAnimationFrame(() => this.#render(gl))
@@ -60,17 +63,9 @@ class Matrices {
         location: gl.getUniformLocation(this.program, 'u_color'),
         value: [0.5, 0.1, 0.2, 1.0]
       },
-      u_translation: {
-        location: gl.getUniformLocation(this.program, 'u_translation'),
-        value: [0, 0]
-      },
-      u_rotation: {
-        location: gl.getUniformLocation(this.program, 'u_rotation'),
-        value: [0, 1]
-      },
-      u_scale: {
-        location: gl.getUniformLocation(this.program, 'u_scale'),
-        value: [1, 1]
+      u_matrix: {
+        location: gl.getUniformLocation(this.program, 'u_matrix'),
+        value: glMatrix.mat3.create()
       }
     }
   }
@@ -99,23 +94,21 @@ class Matrices {
     // u_resolution
     gl.uniform2f(this.uniforms.u_resolution.location, this.canvas.width, this.canvas.height)
 
-    // u_translation
-    gl.uniform2f(
-      this.uniforms.u_translation.location,
-      this.canvas.width / 2 + Math.cos(Date.now() * 0.004) * 100 - 50,
-      this.canvas.height / 2 + Math.sin(Date.now() * 0.0025) * 100 - 75
-    )
-
-    // u_rotation
-    const rotation = [
-      Math.sin(Date.now() * 0.002),
-      Math.cos(Date.now() * 0.002)
-    ]
-    gl.uniform2fv(this.uniforms.u_rotation.location, rotation)
-
-    // u_scale
+    // u_matrix
     const scale = 0.5 + Math.abs(Math.sin(Date.now() * 0.003) * 0.5)
-    gl.uniform2fv(this.uniforms.u_scale.location, [scale, scale])
+
+    const translation = [
+      this.canvas.width / 2 + Math.cos(Date.now() * 0.004) * 40,
+      this.canvas.height / 2 + Math.sin(Date.now() * 0.0025) * 40
+    ]
+
+    const matrix = glMatrix.mat3.create()
+    glMatrix.mat3.translate(matrix, matrix, translation)
+    glMatrix.mat3.rotate(matrix, matrix, Date.now() * 0.0035)
+    glMatrix.mat3.scale(matrix, matrix, [scale, scale])
+    glMatrix.mat3.translate(matrix, matrix, [-50, -75]) // Move the origin from top left to the center
+
+    gl.uniformMatrix3fv(this.uniforms.u_matrix.location, false, matrix)
 
     // u_color
     gl.uniform4fv(this.uniforms.u_color.location, this.uniforms.u_color.value)
@@ -154,3 +147,4 @@ class Matrices {
 
 const app = new Matrices()
 console.log(app)
+console.log(glMatrix)
