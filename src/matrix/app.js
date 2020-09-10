@@ -67,6 +67,10 @@ class Matrices {
       u_rotation: {
         location: gl.getUniformLocation(this.program, 'u_rotation'),
         value: [0, 1]
+      },
+      u_scale: {
+        location: gl.getUniformLocation(this.program, 'u_scale'),
+        value: [1, 1]
       }
     }
   }
@@ -108,6 +112,10 @@ class Matrices {
       Math.cos(Date.now() * 0.002)
     ]
     gl.uniform2fv(this.uniforms.u_rotation.location, rotation)
+
+    // u_scale
+    const scale = 0.5 + Math.abs(Math.sin(Date.now() * 0.003) * 0.5)
+    gl.uniform2fv(this.uniforms.u_scale.location, [scale, scale])
 
     // u_color
     gl.uniform4fv(this.uniforms.u_color.location, this.uniforms.u_color.value)
