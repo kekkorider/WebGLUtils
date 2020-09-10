@@ -7,6 +7,7 @@ const fragmentShader = require('./rectangle.frag')
 class Matrices {
   constructor() {
     this.canvas = document.querySelector('canvas')
+    this.tick = 0
 
     this.#init()
   }
@@ -27,11 +28,13 @@ class Matrices {
   }
 
   #render(gl) {
+    this.tick++
+
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
     this.#updateUniforms()
 
-    gl.drawArrays(gl.TRIANGLES, 0, 6*15)
+    gl.drawArrays(gl.TRIANGLES, 0, 6*16)
 
     requestAnimationFrame(() => this.#render(gl))
   }
@@ -66,6 +69,10 @@ class Matrices {
       u_matrix: {
         location: gl.getUniformLocation(this.program, 'u_matrix'),
         value: mat3.create()
+      },
+      u_time: {
+        location: gl.getUniformLocation(this.program, 'u_time'),
+        value: 0
       }
     }
   }
@@ -111,12 +118,15 @@ class Matrices {
     const matrix = mat4.create()
     mat4.ortho(matrix, 0, this.canvas.width, this.canvas.height, 0, 0.1 , 1000)
     mat4.translate(matrix, matrix, translation)
-    mat4.rotate(matrix, matrix, Math.sin(Date.now() * 0.005) * 0.3, [1, 0, 0])
-    mat4.rotate(matrix, matrix, Date.now() * 0.001, [0, 1, 0])
+    mat4.rotate(matrix, matrix, Math.PI * -0.1, [1, 0, 0])
+    mat4.rotate(matrix, matrix, Math.PI * 0.1, [0, 1, 0])
     mat4.scale(matrix, matrix, [scale, scale, scale])
     mat4.translate(matrix, matrix, [-50, -75, 0]) // Move the origin from top left to the center
 
     gl.uniformMatrix4fv(this.uniforms.u_matrix.location, false, matrix)
+
+    // u_time
+    gl.uniform1f(this.uniforms.u_time.location, this.tick)
   }
 
   #drawGeometry() {
@@ -136,6 +146,14 @@ class Matrices {
       0, 150, 30,
       30, 150, 30,
       30, 0, 30,
+
+      0, 0, 0, // Left column - top
+      0, 0, 30,
+      30, 0, 0,
+      0, 0, 30,
+      30, 0, 30,
+      30, 0, 0,
+
 
       0, 0, 0, // Left column - left side
       0, 150, 0,
@@ -186,10 +204,10 @@ class Matrices {
       100, 0, 0,
       100, 0, 30,
 
-      0, 0, 0, // Top rung - top
-      0, 0, 30,
+      30, 0, 0, // Top rung - top
+      30, 0, 30,
       100, 0, 0,
-      0, 0, 30,
+      30, 0, 30,
       100, 0, 30,
       100, 0, 0,
 
@@ -247,6 +265,13 @@ class Matrices {
       10, 170, 130,
       10, 170, 130,
       10, 170, 130,
+
+      200, 100, 80, // Left column - top
+      200, 100, 80,
+      200, 100, 80,
+      200, 100, 80,
+      200, 100, 80,
+      200, 100, 80,
 
       100, 150, 60, // Left column - left side
       100, 150, 60,
