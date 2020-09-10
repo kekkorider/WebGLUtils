@@ -1,6 +1,5 @@
 import WebGLUtils from '../WebGLUtils'
-
-const glMatrix = require('gl-matrix')
+import { mat3 } from 'gl-matrix'
 
 const vertexShader = require('../shaders/rectangle.vert')
 const fragmentShader = require('../shaders/rectangle.frag')
@@ -55,17 +54,13 @@ class Matrices {
     const gl = this.gl
 
     this.uniforms = {
-      u_resolution: {
-        location: gl.getUniformLocation(this.program, 'u_resolution'),
-        value: [this.canvas.width, this.canvas.height]
-      },
       u_color: {
         location: gl.getUniformLocation(this.program, 'u_color'),
         value: [0.5, 0.1, 0.2, 1.0]
       },
       u_matrix: {
         location: gl.getUniformLocation(this.program, 'u_matrix'),
-        value: glMatrix.mat3.create()
+        value: mat3.create()
       }
     }
   }
@@ -91,9 +86,6 @@ class Matrices {
   #updateUniforms() {
     const gl = this.gl
 
-    // u_resolution
-    gl.uniform2f(this.uniforms.u_resolution.location, this.canvas.width, this.canvas.height)
-
     // u_matrix
     const scale = 0.5 + Math.abs(Math.sin(Date.now() * 0.003) * 0.5)
 
@@ -102,11 +94,12 @@ class Matrices {
       this.canvas.height / 2 + Math.sin(Date.now() * 0.0025) * 40
     ]
 
-    const matrix = glMatrix.mat3.create()
-    glMatrix.mat3.translate(matrix, matrix, translation)
-    glMatrix.mat3.rotate(matrix, matrix, Date.now() * 0.0035)
-    glMatrix.mat3.scale(matrix, matrix, [scale, scale])
-    glMatrix.mat3.translate(matrix, matrix, [-50, -75]) // Move the origin from top left to the center
+    const matrix = mat3.create()
+    mat3.projection(matrix, this.canvas.width, this.canvas.height)
+    mat3.translate(matrix, matrix, translation)
+    mat3.rotate(matrix, matrix, Date.now() * 0.0035)
+    mat3.scale(matrix, matrix, [scale, scale])
+    mat3.translate(matrix, matrix, [-50, -75]) // Move the origin from top left to the center
 
     gl.uniformMatrix3fv(this.uniforms.u_matrix.location, false, matrix)
 
@@ -147,4 +140,3 @@ class Matrices {
 
 const app = new Matrices()
 console.log(app)
-console.log(glMatrix)
