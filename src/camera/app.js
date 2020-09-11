@@ -1,10 +1,11 @@
 import WebGLUtils from '../WebGLUtils'
+import Camera from '../Camera'
 import { mat3, mat4 } from 'gl-matrix'
 
 const vertexShader = require('./rectangle.vert')
 const fragmentShader = require('./rectangle.frag')
 
-class Matrices {
+class App {
   constructor() {
     this.canvas = document.querySelector('canvas')
     this.tick = 0
@@ -18,6 +19,7 @@ class Matrices {
     this.#createAttributes()
     this.#createUniforms()
     this.#createBuffers()
+    this.#createCamera()
     this.#drawGeometry()
 
     this.gl.enable(this.gl.CULL_FACE) // backface culling
@@ -34,7 +36,7 @@ class Matrices {
 
     this.#updateUniforms()
 
-    // gl.drawArrays(gl.TRIANGLES, 0, 6*16)
+    gl.drawArrays(gl.TRIANGLES, 0, 6*16)
 
     requestAnimationFrame(() => this.#render(gl))
   }
@@ -99,43 +101,20 @@ class Matrices {
     gl.vertexAttribPointer(this.attributes.a_color.location, 3, gl.UNSIGNED_BYTE, true, 0, 0)
   }
 
+  #createCamera() {
+    this.camera = new Camera(this.gl)
+  }
+
   #updateUniforms() {
     const gl = this.gl
 
     // u_matrix
-    const projectionMatrix = mat4.create()
-    mat4.perspective(projectionMatrix, Math.PI * 0.25, this.canvas.width / this.canvas.height, 0.1, 20000)
-    mat4.translate(projectionMatrix, projectionMatrix, [-50, 75, 0]) // Move the origin from top left to the center
-
-    const cameraMatrix = mat4.create()
-
-    const viewMatrix = mat4.create()
-    mat4.invert(viewMatrix, cameraMatrix)
-
     const cameraX = Math.cos(Date.now() * 0.001) * 500
-    const cameraZ = Math.sin(Date.now() * 0.001) * 500
-    // mat4.translate(viewMatrix, viewMatrix, [cameraX, 0, cameraZ])
-    mat4.lookAt(viewMatrix, [cameraX, 0, cameraZ], [0, 0, 0], [0, 1, 0])
-    mat4.rotate(viewMatrix, viewMatrix, Math.PI, [1, 0, 0])
+    const cameraZ = Math.sin(Date.now() * 0.001) * 700
 
-    const viewProjectionMatrix = mat4.create()
-    mat4.multiply(viewProjectionMatrix, projectionMatrix, viewMatrix)
-
-    // gl.uniformMatrix4fv(this.uniforms.u_matrix.location, false, viewProjectionMatrix)
-
-    const radius = 150
-    const numShapes = 5
-    for (let i = 0; i < numShapes; i++) {
-      const angle = i * Math.PI * 2 / numShapes
-      const x = Math.cos(angle) * radius
-      const z = Math.sin(angle) * radius
-
-      mat4.translate(viewProjectionMatrix, viewProjectionMatrix, [x, 0, z])
-
-      gl.uniformMatrix4fv(this.uniforms.u_matrix.location, false, viewProjectionMatrix)
-
-      gl.drawArrays(gl.TRIANGLES, 0, 6*16)
-    }
+    const viewProjectionMatrix = this.camera.lookAt([cameraX, 0, cameraZ], [0, 0, 0])
+    // const viewProjectionMatrix = this.camera.translate([cameraX, 0, cameraZ])
+    gl.uniformMatrix4fv(this.uniforms.u_matrix.location, false, viewProjectionMatrix)
   }
 
   #drawGeometry() {
@@ -379,5 +358,5 @@ class Matrices {
   }
 }
 
-const app = new Matrices()
+const app = new App()
 console.log(app)
