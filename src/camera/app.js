@@ -9,6 +9,7 @@ class App {
   constructor() {
     this.canvas = document.querySelector('canvas')
     this.tick = 0
+    this.target = { x: 0, y: 0, z: 0 }
 
     this.#init()
   }
@@ -102,18 +103,21 @@ class App {
   }
 
   #createCamera() {
-    this.camera = new Camera(this.gl)
+    const fov = Math.PI * 0.25
+    const aspect = this.gl.canvas.width / this.gl.canvas.height
+    const near = 0.1
+    const far = 10000
+    const radius = 500
+    const controls = true
+
+    this.camera = new Camera(this.gl, fov, aspect, near, far, radius, controls)
   }
 
   #updateUniforms() {
     const gl = this.gl
 
     // u_matrix
-    const cameraX = Math.cos(Date.now() * 0.001) * 500
-    const cameraZ = Math.sin(Date.now() * 0.001) * 700
-
-    const viewProjectionMatrix = this.camera.lookAt([cameraX, 0, cameraZ], [0, 0, 0])
-    // const viewProjectionMatrix = this.camera.translate([cameraX, 0, cameraZ])
+    const viewProjectionMatrix = this.camera.lookAt(this.target)
     gl.uniformMatrix4fv(this.uniforms.u_matrix.location, false, viewProjectionMatrix)
   }
 
@@ -232,7 +236,7 @@ class App {
       67, 90, 0,
       67, 90, 0,
       30, 90, 30,
-      67, 90, 30,
+      67, 90, 30
     ])
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.position)
