@@ -2,6 +2,8 @@ precision highp float;
 
 uniform vec4 u_color;
 uniform float u_shininess;
+uniform vec3 u_lightColor;
+uniform vec3 u_specularColor;
 
 varying vec4 v_color;
 varying vec3 v_normal;
@@ -23,6 +25,6 @@ void main() {
   }
 
   gl_FragColor = v_color;
-  gl_FragColor.rgb *= light;
-  gl_FragColor.rgb += specular;
+  gl_FragColor.rgb *= light * u_lightColor;
+  gl_FragColor.rgb += specular * u_specularColor;
 }

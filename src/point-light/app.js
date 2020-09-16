@@ -100,6 +100,14 @@ class App {
       u_shininess: {
         location: gl.getUniformLocation(this.program, 'u_shininess'),
         value: 64
+      },
+      u_lightColor: {
+        location: gl.getUniformLocation(this.program, 'u_lightColor'),
+        value: [0, 0, 0]
+      },
+      u_specularColor: {
+        location: gl.getUniformLocation(this.program, 'u_specularColor'),
+        value: [0, 0, 0]
       }
     }
   }
@@ -154,8 +162,7 @@ class App {
 
     // u_worldMatrix
     const u_worldMatrix = mat4.create()
-    // mat4.translate(u_worldMatrix, u_worldMatrix, [-50, -75, -15])
-    // mat4.rotate(u_worldMatrix, u_worldMatrix, rotation, [0, 1, 0])
+    mat4.translate(u_worldMatrix, u_worldMatrix, [-50, -75, -15])
     gl.uniformMatrix4fv(this.uniforms.u_worldMatrix.location, false, u_worldMatrix)
 
     // u_worldViewProjectionMatrix
@@ -164,13 +171,12 @@ class App {
 
     // u_worldInverseTransposeMatrix
     const u_worldInverseTransposeMatrix = mat4.create()
-    // mat4.rotate(u_worldInverseTransposeMatrix, u_worldInverseTransposeMatrix, rotation, [0, 1, 0])
     mat4.invert(u_worldInverseTransposeMatrix, u_worldInverseTransposeMatrix)
     mat4.transpose(u_worldInverseTransposeMatrix, u_worldInverseTransposeMatrix)
     gl.uniformMatrix4fv(this.uniforms.u_worldInverseTransposeMatrix.location, false, u_worldInverseTransposeMatrix)
 
     // u_lightWorldPosition
-    const u_lightWorldPosition = [0, Math.sin(this.tick * 0.025) * 100, 80]
+    const u_lightWorldPosition = [20, Math.sin(this.tick * 0.025) * 100, 80]
     gl.uniform3fv(this.uniforms.u_lightWorldPosition.location, u_lightWorldPosition)
 
     // u_viewWorldPosition
@@ -183,6 +189,12 @@ class App {
 
     // u_shininess
     gl.uniform1f(this.uniforms.u_shininess.location, 64)
+
+    // u_lightColor
+    gl.uniform3fv(this.uniforms.u_lightColor.location, [0.3, 0.6, 0.1])
+
+    // u_specularColor
+    gl.uniform3fv(this.uniforms.u_specularColor.location, [0.3, 0.6, 0.1])
   }
 
   #drawGeometry() {

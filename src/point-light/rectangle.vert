@@ -24,6 +24,8 @@ void main() {
 
   vec3 surfaceWorldPosition = (u_worldMatrix * a_position).xyz;
 
+  position.xyz += vec3(-50.0, -75.0, -15.0);
+
   gl_Position = u_worldViewProjectionMatrix * position;
 
   v_color = a_color;
