@@ -34,6 +34,9 @@ class App {
   #render(gl) {
     this.tick++
 
+    this.lightDir.x = Math.cos(this.tick * 0.04)
+    this.lightDir.y = Math.sin(this.tick * 0.03)
+
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
     this.#updateUniforms()
@@ -74,16 +77,20 @@ class App {
     const gl = this.gl
 
     this.uniforms = {
-      u_matrix: {
-        location: gl.getUniformLocation(this.program, 'u_matrix'),
+      u_worldMatrix: {
+        location: gl.getUniformLocation(this.program, 'u_worldMatrix'),
+        value: mat4.create()
+      },
+      u_worldViewProjectionMatrix: {
+        location: gl.getUniformLocation(this.program, 'u_worldViewProjectionMatrix'),
         value: mat3.create()
       },
       u_lightDir: {
         location: gl.getUniformLocation(this.program, 'u_lightDir'),
         value: vec3.create()
       },
-      u_time: {
-        location: gl.getUniformLocation(this.program, 'u_time'),
+      u_rotationY: {
+        location: gl.getUniformLocation(this.program, 'u_rotationY'),
         value: 0
       }
     }
@@ -129,7 +136,7 @@ class App {
     const near = 0.1
     const far = 10000
     const radius = 500
-    const controls = true
+    const controls = false
 
     this.camera = new Camera(this.gl, fov, aspect, near, far, radius, controls)
   }
@@ -137,17 +144,23 @@ class App {
   #updateUniforms() {
     const gl = this.gl
 
-    // u_matrix
+    // u_rotationY
+    const rotation = this.tick * 0.01
+    gl.uniform1f(this.uniforms.u_rotationY.location, rotation)
+
+    // u_worldMatrix
+    const worldMatrix = mat4.create()
+    mat4.rotate(worldMatrix, worldMatrix, rotation, [0, 1, 0])
+    gl.uniformMatrix4fv(this.uniforms.u_worldMatrix.location, false, worldMatrix)
+
+    // u_worldViewProjectionMatrix
     const viewProjectionMatrix = this.camera.lookAt(this.target)
-    gl.uniformMatrix4fv(this.uniforms.u_matrix.location, false, viewProjectionMatrix)
+    gl.uniformMatrix4fv(this.uniforms.u_worldViewProjectionMatrix.location, false, viewProjectionMatrix)
 
     // u_lightDir
     const lightDir = vec3.fromValues(this.lightDir.x, this.lightDir.y, this.lightDir.z)
     vec3.normalize(lightDir, lightDir)
     gl.uniform3fv(this.uniforms.u_lightDir.location, lightDir)
-
-    // u_time
-    gl.uniform1f(this.uniforms.u_time.location, this.tick)
   }
 
   #drawGeometry() {
