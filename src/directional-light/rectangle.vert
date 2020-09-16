@@ -3,7 +3,7 @@ attribute vec4 a_color;
 attribute vec3 a_normal;
 
 uniform mat4 u_worldViewProjectionMatrix;
-uniform mat4 u_worldMatrix;
+uniform mat4 u_worldInverseTransposeMatrix;
 uniform float u_rotationY;
 
 varying vec4 v_color;
@@ -24,5 +24,5 @@ void main() {
   gl_Position = u_worldViewProjectionMatrix * position;
 
   v_color = a_color;
-  v_normal = mat3(u_worldMatrix) * a_normal;
+  v_normal = mat3(u_worldInverseTransposeMatrix) * a_normal;
 }

@@ -77,8 +77,8 @@ class App {
     const gl = this.gl
 
     this.uniforms = {
-      u_worldMatrix: {
-        location: gl.getUniformLocation(this.program, 'u_worldMatrix'),
+      u_worldInverseTransposeMatrix: {
+        location: gl.getUniformLocation(this.program, 'u_worldInverseTransposeMatrix'),
         value: mat4.create()
       },
       u_worldViewProjectionMatrix: {
@@ -148,14 +148,16 @@ class App {
     const rotation = this.tick * 0.01
     gl.uniform1f(this.uniforms.u_rotationY.location, rotation)
 
-    // u_worldMatrix
-    const worldMatrix = mat4.create()
-    mat4.rotate(worldMatrix, worldMatrix, rotation, [0, 1, 0])
-    gl.uniformMatrix4fv(this.uniforms.u_worldMatrix.location, false, worldMatrix)
-
     // u_worldViewProjectionMatrix
     const viewProjectionMatrix = this.camera.lookAt(this.target)
     gl.uniformMatrix4fv(this.uniforms.u_worldViewProjectionMatrix.location, false, viewProjectionMatrix)
+
+    // u_worldInverseTransposeMatrix
+    const worldMatrix = mat4.create()
+    mat4.rotate(worldMatrix, worldMatrix, rotation, [0, 1, 0])
+    mat4.invert(worldMatrix, worldMatrix)
+    mat4.transpose(worldMatrix, worldMatrix)
+    gl.uniformMatrix4fv(this.uniforms.u_worldInverseTransposeMatrix.location, false, worldMatrix)
 
     // u_lightDir
     const lightDir = vec3.fromValues(this.lightDir.x, this.lightDir.y, this.lightDir.z)
