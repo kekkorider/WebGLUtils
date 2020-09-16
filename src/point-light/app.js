@@ -89,13 +89,17 @@ class App {
         location: gl.getUniformLocation(this.program, 'u_worldViewProjectionMatrix'),
         value: mat3.create()
       },
-      u_rotationY: {
-        location: gl.getUniformLocation(this.program, 'u_rotationY'),
-        value: 0
-      },
       u_lightWorldPosition: {
         location: gl.getUniformLocation(this.program, 'u_lightWorldPosition'),
         value: vec3.create()
+      },
+      u_viewWorldPosition: {
+        location: gl.getUniformLocation(this.program, 'u_viewWorldPosition'),
+        value: vec3.create()
+      },
+      u_shininess: {
+        location: gl.getUniformLocation(this.program, 'u_shininess'),
+        value: 64
       }
     }
   }
@@ -148,14 +152,10 @@ class App {
   #updateUniforms() {
     const gl = this.gl
 
-    // u_rotationY
-    const rotation = this.tick * 0.01
-    gl.uniform1f(this.uniforms.u_rotationY.location, rotation)
-
     // u_worldMatrix
     const u_worldMatrix = mat4.create()
     // mat4.translate(u_worldMatrix, u_worldMatrix, [-50, -75, -15])
-    mat4.rotate(u_worldMatrix, u_worldMatrix, rotation, [0, 1, 0])
+    // mat4.rotate(u_worldMatrix, u_worldMatrix, rotation, [0, 1, 0])
     gl.uniformMatrix4fv(this.uniforms.u_worldMatrix.location, false, u_worldMatrix)
 
     // u_worldViewProjectionMatrix
@@ -164,14 +164,25 @@ class App {
 
     // u_worldInverseTransposeMatrix
     const u_worldInverseTransposeMatrix = mat4.create()
-    mat4.rotate(u_worldInverseTransposeMatrix, u_worldInverseTransposeMatrix, rotation, [0, 1, 0])
+    // mat4.rotate(u_worldInverseTransposeMatrix, u_worldInverseTransposeMatrix, rotation, [0, 1, 0])
     mat4.invert(u_worldInverseTransposeMatrix, u_worldInverseTransposeMatrix)
     mat4.transpose(u_worldInverseTransposeMatrix, u_worldInverseTransposeMatrix)
     gl.uniformMatrix4fv(this.uniforms.u_worldInverseTransposeMatrix.location, false, u_worldInverseTransposeMatrix)
 
     // u_lightWorldPosition
-    const u_lightWorldPosition = [0, 0, 140]
+    const u_lightWorldPosition = [0, Math.sin(this.tick * 0.025) * 100, 80]
     gl.uniform3fv(this.uniforms.u_lightWorldPosition.location, u_lightWorldPosition)
+
+    // u_viewWorldPosition
+    const u_viewWorldPosition = [
+      this.camera.position.x,
+      this.camera.position.y,
+      this.camera.position.z
+    ]
+    gl.uniform3fv(this.uniforms.u_viewWorldPosition.location, u_viewWorldPosition)
+
+    // u_shininess
+    gl.uniform1f(this.uniforms.u_shininess.location, 64)
   }
 
   #drawGeometry() {
